@@ -1,0 +1,23 @@
+service: serverless-pdf-generator
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+
+functions:
+  generatePdf:
+    handler: dist/handler.generatePdf
+    events:
+      - http:
+          path: generate-pdf
+          method: post
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 3000
+  IS_OFFLINE: ${env:IS_OFFLINE, "false"}

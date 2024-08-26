@@ -1,0 +1,26 @@
+{
+  "name": "serverless-pdf-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "deploy": "npm run build && npx serverless deploy",
+    "start": "nodemon --exec 'npx serverless offline'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.143",
+    "@types/node": "^22.5.0",
+    "aws-sdk": "^2.1683.0",
+    "serverless-offline": "^13.7.0",
+    "typescript": "^5.5.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "serverless": "^3.38.0"
+  }
+}
