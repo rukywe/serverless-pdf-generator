@@ -8,7 +8,7 @@ provider:
 
 functions:
   generatePdf:
-    handler: dist/handler.generatePdf
+    handler: dist/handlers/pdfHandler.generatePdf
     events:
       - http:
           path: generate-pdf
