@@ -18,11 +18,14 @@ export const generatePdf: APIGatewayProxyHandler = async (
 
     const pdfBuffer = await pdfService.generatePDF(request);
 
+    logger.info(`PDF generated, size: ${pdfBuffer.length} bytes`);
+
     return {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${request.name}_document.pdf"`
+        'Content-Disposition': `attachment; filename="${request.name}_document.pdf"`,
+        'Access-Control-Allow-Origin': '*'
       },
       body: pdfBuffer.toString('base64'),
       isBase64Encoded: true
