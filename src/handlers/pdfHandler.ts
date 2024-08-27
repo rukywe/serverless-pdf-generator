@@ -15,7 +15,18 @@ export const generatePdf: APIGatewayProxyHandler = async (event) => {
     logger.info('Handler started');
     logger.info(`Received event: ${JSON.stringify(event)}`);
 
-    const body = JSON.parse(event.body || '{}');
+    let bodyJson: string;
+    if (event.isBase64Encoded && event.body) {
+      bodyJson = Buffer.from(event.body, 'base64').toString('utf-8');
+    } else if (event.body) {
+      bodyJson = event.body;
+    } else {
+      throw new Error('Request body is empty');
+    }
+
+    logger.info(`Decoded body: ${bodyJson}`);
+
+    const body = JSON.parse(bodyJson);
     logger.info(`Parsed body: ${JSON.stringify(body)}`);
 
     const request: PDFRequest = validate(pdfRequestSchema, body);
