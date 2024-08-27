@@ -37,6 +37,10 @@ export const generatePdf: APIGatewayProxyHandler = async (event) => {
 
     const fileName = `${request.name}-${Date.now()}.pdf`;
 
+    if (!BUCKET_NAME) {
+      throw new Error('BUCKET_NAME environment variable is not set');
+    }
+
     logger.info(`Uploading to S3 bucket: ${BUCKET_NAME}`);
     await s3
       .putObject({

@@ -33,3 +33,10 @@ custom:
     httpPort: 3000
   IS_OFFLINE: ${env:IS_OFFLINE, "false"}
   bucketName: my-pdf-generator-bucket
+
+resources:
+  Resources:
+    PdfGeneratorBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: my-pdf-generator-bucket
