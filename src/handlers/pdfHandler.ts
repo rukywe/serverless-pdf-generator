@@ -1,53 +1,33 @@
-import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
-import { PDFRequest } from '../models/pdfRequest';
+import { APIGatewayProxyHandler } from 'aws-lambda';
 import { PDFService } from '../service/pdfService';
-import logger from '../utils/logger';
-import { CustomValidationError, validate } from '../utils/validate';
-import { pdfRequestSchema } from '../validation/schemas';
+import { PDFRequest } from '../models/pdfRequest';
 
 const pdfService = new PDFService();
 
-export const generatePdf: APIGatewayProxyHandler = async (
-  event
-): Promise<APIGatewayProxyResult> => {
+export const generatePdf: APIGatewayProxyHandler = async (event) => {
   try {
     const body = JSON.parse(event.body || '{}');
-    const request: PDFRequest = validate(pdfRequestSchema, body);
-
-    logger.info(`Received request to generate PDF for ${request.name}`);
+    const request: PDFRequest = body;
 
     const pdfBuffer = await pdfService.generatePDF(request);
-    logger.info(`PDF generated, size: ${pdfBuffer.length} bytes`);
 
     return {
       statusCode: 200,
       headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${request.name}_document.pdf"`,
+        'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       },
-      body: pdfBuffer.toString('base64'),
-      isBase64Encoded: true
+      body: JSON.stringify({
+        message: 'PDF generated successfully',
+        filename: `${request.name}_document.pdf`,
+        pdfData: pdfBuffer.toString('base64')
+      })
     };
   } catch (error) {
-    logger.error('Error in PDF generation', error);
-
-    if (error instanceof CustomValidationError) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message: 'Validation error',
-          details: error.details
-        })
-      };
-    }
-
+    console.error('Error in PDF generation', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({
-        message: 'Internal server error',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      })
+      body: JSON.stringify({ message: 'Error generating PDF' })
     };
   }
 };

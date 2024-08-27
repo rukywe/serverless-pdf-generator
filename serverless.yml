@@ -7,7 +7,7 @@ provider:
   stage: ${opt:stage, 'dev'}
   apiGateway:
     binaryMediaTypes:
-      - 'application/pdf'
+      - '*/*'
 
 functions:
   generatePdf:
