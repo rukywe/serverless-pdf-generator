@@ -11,16 +11,19 @@ export const generatePdf: APIGatewayProxyHandler = async (
   event
 ): Promise<APIGatewayProxyResult> => {
   try {
-    const body = JSON.parse(event.body || '{}');
-    const request: PDFRequest = validate(pdfRequestSchema, body);
+    logger.info('Handler started');
+    logger.info(`Received event: ${JSON.stringify(event)}`);
 
-    logger.info(`Received request to generate PDF for ${request.name}`);
+    const body = JSON.parse(event.body || '{}');
+    logger.info(`Parsed body: ${JSON.stringify(body)}`);
+
+    const request: PDFRequest = validate(pdfRequestSchema, body);
+    logger.info(`Validated request: ${JSON.stringify(request)}`);
 
     const pdfBuffer = await pdfService.generatePDF(request);
-
     logger.info(`PDF generated, size: ${pdfBuffer.length} bytes`);
 
-    return {
+    const response = {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/pdf',
@@ -30,6 +33,14 @@ export const generatePdf: APIGatewayProxyHandler = async (
       body: pdfBuffer.toString('base64'),
       isBase64Encoded: true
     };
+    logger.info(
+      `Preparing response: ${JSON.stringify({
+        ...response,
+        body: '[PDF_DATA]'
+      })}`
+    );
+
+    return response;
   } catch (error) {
     logger.error('Error in PDF generation', error);
 

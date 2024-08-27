@@ -1,15 +1,23 @@
 import { PDFRequest } from '../models/pdfRequest';
 import PDFDocument from 'pdfkit';
+import logger from '../utils/logger';
 
 export class PDFService {
   async generatePDF(request: PDFRequest): Promise<Buffer> {
+    logger.info('Starting PDF generation');
     return new Promise((resolve, reject) => {
       const doc = new PDFDocument();
       const chunks: Buffer[] = [];
 
       doc.on('data', (chunk) => chunks.push(chunk));
-      doc.on('end', () => resolve(Buffer.concat(chunks)));
-      doc.on('error', reject);
+      doc.on('end', () => {
+        logger.info('PDF generation completed');
+        resolve(Buffer.concat(chunks));
+      });
+      doc.on('error', (err) => {
+        logger.error('Error in PDF generation', err);
+        reject(err);
+      });
 
       doc.fontSize(25).text('Welcome to Your Custom PDF!', { align: 'center' });
 
@@ -62,6 +70,7 @@ export class PDFService {
         });
       }
 
+      logger.info('Finalizing PDF document');
       doc.end();
     });
   }
