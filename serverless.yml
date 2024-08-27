@@ -8,6 +8,14 @@ provider:
   apiGateway:
     binaryMediaTypes:
       - '*/*'
+  environment:
+    BUCKET_NAME: ${self:custom.bucketName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: 'arn:aws:s3:::${self:custom.bucketName}/*'
 
 functions:
   generatePdf:
@@ -24,3 +32,4 @@ custom:
   serverless-offline:
     httpPort: 3000
   IS_OFFLINE: ${env:IS_OFFLINE, "false"}
+  bucketName: my-pdf-generator-bucket
