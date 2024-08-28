@@ -1,7 +1,7 @@
 import { Schema } from 'joi';
 
 export class CustomValidationError extends Error {
-  constructor(public details: string[]) {
+  constructor(public details: { [key: string]: string }) {
     super('Validation error');
     this.name = 'CustomValidationError';
   }
@@ -10,9 +10,11 @@ export class CustomValidationError extends Error {
 export const validate = <T>(schema: Schema, data: unknown): T => {
   const { error, value } = schema.validate(data, { abortEarly: false });
   if (error) {
-    throw new CustomValidationError(
-      error.details.map((detail) => detail.message)
-    );
+    const errorDetails: { [key: string]: string } = {};
+    error.details.forEach((detail) => {
+      errorDetails[detail.path.join('.')] = detail.message;
+    });
+    throw new CustomValidationError(errorDetails);
   }
   return value as T;
 };

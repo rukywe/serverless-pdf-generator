@@ -78,7 +78,7 @@ export const generatePdf: APIGatewayProxyHandler = async (event) => {
         statusCode: 400,
         body: JSON.stringify({
           message: 'Validation error',
-          details: error.details
+          errors: error.details
         })
       };
     }
